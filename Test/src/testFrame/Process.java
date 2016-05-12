@@ -24,9 +24,10 @@ public class Process implements Element {
 
 	@Override
 	public void draw() {
-		 icon.setText(code);
-	        icon.setVerticalTextPosition(SwingConstants.CENTER);
-	        icon.setHorizontalTextPosition(SwingConstants.CENTER);
+		icon.setText(code);
+	    icon.setVerticalTextPosition(SwingConstants.CENTER);
+	    icon.setHorizontalTextPosition(SwingConstants.CENTER);
+	    
 		panel.add(icon);
 		panel.validate();
 	}
@@ -70,6 +71,13 @@ public class Process implements Element {
 		return this.code;
 	}
 
+	@Override
+	public void relocateText(String string) {
+		panel.remove(icon);
+		code = string;
+		this.draw();
+	}
+	
 	@Override
 	public Element copy() {
         Process clone = new Process(panel);

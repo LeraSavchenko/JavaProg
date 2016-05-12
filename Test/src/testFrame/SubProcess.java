@@ -71,6 +71,13 @@ public class SubProcess implements Element {
 	}
 	
 	@Override
+	public void relocateText(String string) {
+		panel.remove(icon);
+		code = string;
+		this.draw();
+	}
+	
+	@Override
 	public Element copy() {
         SubProcess clone = new SubProcess(panel);
         clone.setCode(this.getCode());

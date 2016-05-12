@@ -23,6 +23,8 @@ public interface Element {
 	
 	public void setCode(String code);
 	
+	public void relocateText(String string);
+	
 	public String getCode();
 
 	public Element copy();

@@ -115,8 +115,9 @@ public class FlowChart extends JFrame{
 		  subProcess.setLocation(20, 180);
 		  condition.setLocation(20, 220);
 		  loop.setLocation(20, 260);
-		  delete.setLocation(20, 300);
-		  text.setLocation(20, 340);
+		  text.setLocation(20, 300);
+		  delete.setLocation(20, 340);
+
 		  
 	      add(panel);
 	      add(newDiagram);
@@ -300,7 +301,6 @@ public class FlowChart extends JFrame{
           }
 	  }
 	  
-	  //TODO textfield placement
 	  public void editText() {
 
 		  if (selected != null) {
@@ -323,13 +323,12 @@ public class FlowChart extends JFrame{
 		  }
 	  }
 	  
-	  //TODO text transfer
 	  public void setText() {
 		  
 		  for (Element current : elements) {
 			  current.resetIcon();
 			  if (current.getCode() == selected) {
-				 current.getIcon().setText((input.getText()));
+				 current.relocateText(input.getText());
 			  }
 		  }
 
@@ -340,7 +339,7 @@ public class FlowChart extends JFrame{
 
 		  panel.validate();
           refresh();
-          panel.repaint();
+//          panel.repaint(); makes no difference
 		  setFocus();
 	  }
 	  

@@ -69,6 +69,13 @@ public class Condition implements Element {
 	public String getCode() {
 		return this.code;
 	}
+	
+	@Override
+	public void relocateText(String string) {
+		panel.remove(icon);
+		code = string;
+		this.draw();
+	}
 
 	@Override
 	public Element copy() {

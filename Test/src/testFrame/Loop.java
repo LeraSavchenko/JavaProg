@@ -86,6 +86,13 @@ public class Loop implements Element {
 	}
 
 	@Override
+	public void relocateText(String string) {
+		panel.remove(icon);
+		code = string;
+		this.draw();
+	}
+	
+	@Override
 	public Element copy() {
         Loop clone = new Loop(panel, this.flag);
         clone.setCode(this.getCode());

@@ -28,6 +28,11 @@ public class Panel extends JPanel{
         return arrows;
     }
 
+//    @Override
+//	public void repaint() {
+//    	
+//    }
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

@@ -71,6 +71,13 @@ public class Data implements Element {
 	}
 
 	@Override
+	public void relocateText(String string) {
+		panel.remove(icon);
+		code = string;
+		this.draw();
+	}
+	
+	@Override
 	public Element copy() {
         Data clone = new Data(panel);
         clone.setCode(this.getCode());
