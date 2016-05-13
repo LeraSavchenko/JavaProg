@@ -2,7 +2,6 @@ package testFrame;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Graphics;
 import java.awt.HeadlessException;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -13,14 +12,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.MouseInputAdapter;
+
+import Elements.Element;
 
 import java.util.ArrayList;
 
@@ -34,8 +32,8 @@ public class FlowChart extends JFrame{
 	  private int currentState = -1;
 	  private Arrow arrow;
 	  private boolean hasStart = false;
-	  private boolean isEdited = false;
 	  private String selected = "";
+	  private Creator factory = new ElementCreator();
 	  
 	  private JButton newDiagram = new JButton("New diagram");
 	  private JButton terminator = new JButton("Terminator");
@@ -43,7 +41,7 @@ public class FlowChart extends JFrame{
 	  private JButton process = new JButton("Process");
 	  private JButton subProcess = new JButton("Subprocess");
 	  private JButton condition = new JButton("Condition");
-	  private JButton loop = new JButton("Loop");
+
 	  private JTextField input = new JTextField();
 	  
 	  //TODO PATTERNS
@@ -52,7 +50,6 @@ public class FlowChart extends JFrame{
 	  private JButton text = new JButton("Text");
 	  
 	  //facade or strategy for mouseclick-selected
-	  //factory method(PROTOTYPE!!) ? for creating Element
 	  //composite for multiple selected
 	  //template method for Element classes
 	  //decorator for arrow(don't fill the "no" arrow)
@@ -83,7 +80,7 @@ public class FlowChart extends JFrame{
 		  subProcess.addActionListener(new AddSubProcess());
 		  data.addActionListener(new AddData());
 		  condition.addActionListener(new AddCondition());
-		  loop.addActionListener(new AddLoop());
+		  
 		  delete.addActionListener(new DeleteElement()); 
 		  text.addActionListener(new EditText());
 		  newDiagram.addActionListener(new ActionListener() {
@@ -102,7 +99,6 @@ public class FlowChart extends JFrame{
 		  process.setSize(120, 20);
 		  subProcess.setSize(120, 20);
 		  condition.setSize(120, 20);
-		  loop.setSize(120, 20);
 		  delete.setSize(120, 20);
 		  text.setSize(120, 20);
 		  
@@ -113,9 +109,8 @@ public class FlowChart extends JFrame{
 		  process.setLocation(20, 140);
 		  subProcess.setLocation(20, 180);
 		  condition.setLocation(20, 220);
-		  loop.setLocation(20, 260);
-		  text.setLocation(20, 300);
-		  delete.setLocation(20, 340);
+		  text.setLocation(20, 260);
+		  delete.setLocation(20, 300);
 
 		  
 	      add(panel);
@@ -125,12 +120,11 @@ public class FlowChart extends JFrame{
 	      add(process);
 	      add(subProcess);
 	      add(condition);
-	      add(loop);
 	      add(delete);
 	      add(text);
 	  }
 	  
-	  private void setFocus() {
+	  void setFocus() {
 	      panel.setFocusable(true);
 	      panel.requestFocusInWindow();
 	  }
@@ -152,7 +146,7 @@ public class FlowChart extends JFrame{
 	      }
 	  }
 	  
-	  private void saveState() {
+	  void saveState() {
 		  Memento state = new Memento(elements, panel.getArrows());
 		  currentState++;
 		  saving.addState(state, currentState);
@@ -168,7 +162,8 @@ public class FlowChart extends JFrame{
 		  
 		  elements = s.getElements();
 	      for (Element current : elements) {
-	          addElement(current);
+	          addListeners(current);
+	          current.resetIcon(); //maybe remove
 	      }
 	      
 	      ArrayList<Arrow> arrows = s.getArrows();
@@ -186,7 +181,7 @@ public class FlowChart extends JFrame{
 	      }
 	       
 	      saveLocation();
-          panel.validate(); //WOOOOOT ONOOOO!!
+          //panel.validate(); //WOOOOOT ONOOOO!!
 	      refresh();
 	      return true;
 	  }
@@ -202,22 +197,6 @@ public class FlowChart extends JFrame{
 		  panel.removeAll();
 		  panel.validate();
 		  panel.repaint();
-	  }
-	  
-	  public void addElement(Element e) {
-
-	      ClickElement click = new ClickElement();
-	      e.getIcon().addMouseListener(click);
-	      e.getIcon().addMouseMotionListener(click);
-	      
-		  saveLocation();
-	      e.draw();
-	      
-	      DragListener drag = new DragListener();
-	      e.getIcon().addMouseListener(drag);
-	      e.getIcon().addMouseMotionListener(drag);
-	      
-	      refresh();
 	  }
 	  
 	  public void deleteElement() {
@@ -345,75 +324,32 @@ public class FlowChart extends JFrame{
 		  setFocus();
 	  }
 	  
-	  public void addTerminator(int n) {
-		  for (Element current : elements) {
-			  current.resetIcon();
-		  }
-		  
-		  Element newTerm = new Terminator(panel);
-		  newTerm.setCode(n);
-		  addElement(newTerm);
-		  elements.add(newTerm);
-		  saveState();
+	  public void addListeners(Element e) {
+		  ClickElement click = new ClickElement();
+	      e.getIcon().addMouseListener(click);
+	      e.getIcon().addMouseMotionListener(click);
+	      
+		  saveLocation();
+	      e.draw();
+	      
+	      DragListener drag = new DragListener();
+	      e.getIcon().addMouseListener(drag);
+	      e.getIcon().addMouseMotionListener(drag);
+	      
+	      refresh();
 	  }
 	  
-	  public void addProcess(int n) {
+	  public void addElement(int n, String name) {
 		  for (Element current : elements) {
 			  current.resetIcon();
 		  }
 		  
-		  Element newProc = new Process(panel);
-		  newProc.setCode(n);
-		  addElement(newProc);
-		  elements.add(newProc);
-		  saveState();
-	  }
-	  
-	  public void addSubProcess(int n) {
-		  for (Element current : elements) {
-			  current.resetIcon();
-		  }
+		  Element newEl = factory.factoryMethod(name, panel);
+		  newEl.setCode(n);
 		  
-		  Element newSub = new SubProcess(panel);
-		  newSub.setCode(n);
-		  addElement(newSub);
-		  elements.add(newSub);
-		  saveState();
-	  }
-	  
-	  public void addData(int n) {
-		  for (Element current : elements) {
-			  current.resetIcon();
-		  }
-		  
-		  Element newData = new Data(panel);
-		  newData.setCode(n);
-		  addElement(newData);
-		  elements.add(newData);
-		  saveState();
-	  }
-	  
-	  public void addCondition(int n) {
-		  for (Element current : elements) {
-			  current.resetIcon();
-		  }
-		  
-		  Element newCond = new Condition(panel);
-		  newCond.setCode(n);
-		  addElement(newCond);
-		  elements.add(newCond);
-		  saveState();
-	  }
-	  
-	  public void addLoop(int flag, int n) {
-		  for (Element current : elements) {
-			  current.resetIcon();
-		  }
-		  
-		  Loop newLoop = new Loop(panel, flag);
-		  newLoop.setCode(n);
-		  addElement(newLoop);
-		  elements.add(newLoop);
+	      addListeners(newEl);
+	      
+		  elements.add(newEl);
 		  saveState();
 	  }
 	  
@@ -421,7 +357,7 @@ public class FlowChart extends JFrame{
 		  int amount = 1;
 		  @Override
 		  public void actionPerformed(ActionEvent e) {
-			  addTerminator(amount);
+			  addElement(amount, "terminator");
 			  setFocus();
 			  amount++;
 		  }
@@ -431,7 +367,7 @@ public class FlowChart extends JFrame{
 		  int amount = 1;
 		  @Override
 		  public void actionPerformed(ActionEvent e) {
-			  addProcess(amount);
+			  addElement(amount, "process");
 			  setFocus();
 			  amount++;
 		  }
@@ -441,7 +377,7 @@ public class FlowChart extends JFrame{
 		  int amount = 1;
 		  @Override
 		  public void actionPerformed(ActionEvent e) {
-			  addSubProcess(amount);
+			  addElement(amount, "subprocess");
 			  setFocus();
 			  amount++;
 		  }
@@ -451,7 +387,7 @@ public class FlowChart extends JFrame{
 		  int amount = 1;
 		  @Override
 		  public void actionPerformed(ActionEvent e) {
-			  addData(amount);
+			  addElement(amount, "data");
 			  setFocus();
 			  amount++;
 		  }
@@ -461,20 +397,8 @@ public class FlowChart extends JFrame{
 		  int amount = 1;
 		  @Override
 		  public void actionPerformed(ActionEvent e) {
-			  addCondition(amount);
+			  addElement(amount, "condition");
 			  setFocus();
-			  amount++;
-		  }
-	  }
-	  
-	  public class AddLoop implements ActionListener {
-		  int amount = 1;
-		  int flag = 0;
-		  @Override
-		  public void actionPerformed(ActionEvent e) {
-			  addLoop(flag, amount);
-			  setFocus();
-			  flag++;
 			  amount++;
 		  }
 	  }

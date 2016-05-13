@@ -1,5 +1,7 @@
 package testFrame;
 
+import Elements.Element;
+
 public class Arrow {
 	private Element start, end;
 

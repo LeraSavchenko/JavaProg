@@ -3,6 +3,8 @@ package testFrame;
 import java.awt.Point;
 import java.util.ArrayList;
 
+import Elements.Element;
+
 public class Memento {
 	private ArrayList<Element> elements;
 	private ArrayList<Arrow> arrows;
