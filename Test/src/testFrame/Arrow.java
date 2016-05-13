@@ -24,7 +24,12 @@ public class Arrow {
     }
 
     public boolean counterEdge(Arrow arrow) {
-        return arrow.getEnd().equals(start) && arrow.getStart().equals(end);
+    	if (arrow.getEnd() == null) {
+    		return false;
+    	}
+    	else {
+    		return arrow.getEnd().equals(start) && arrow.getStart().equals(end);
+    	}
     }
 
     public Arrow copy() {

@@ -5,6 +5,10 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
+import ArrowStrategy.ArrowContext;
+import ArrowStrategy.DrawDown;
+import ArrowStrategy.DrawUp;
+
 public class Panel extends JPanel{
 
     private ArrayList<Arrow> arrows = new ArrayList<>();
@@ -28,10 +32,6 @@ public class Panel extends JPanel{
         return arrows;
     }
 
-//    @Override
-//	public void repaint() {
-//    	
-//    }
     
     @Override
     protected void paintComponent(Graphics g) {
@@ -40,16 +40,12 @@ public class Panel extends JPanel{
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         for (Arrow arrow : arrows) {
         	if (arrow.getStart() != null && arrow.getEnd() != null) {
-	            int x1 = (arrow.getStart().getIcon().getWidth() / 2) + arrow.getStart().getIcon().getX();
-	            int y1 = arrow.getStart().getIcon().getHeight() + arrow.getStart().getIcon().getY();
-	            int x2 = (arrow.getEnd().getIcon().getWidth() / 2) + arrow.getEnd().getIcon().getX();
-	            int y2 = arrow.getEnd().getIcon().getY();
-	            drawArrowLine(g, x1, y1, x2, y2);
+	            drawArrowLine(g, arrow);
         	}
         }
     }
     
-    private void drawArrowLine(Graphics g, int x1, int y1, int x2, int y2) {
+    private void drawArrowLine(Graphics g, Arrow arrow/**int x1, int y1, int x2, int y2**/) {
 //        int dx = x2 - x1, dy = y2 - y1, d = 22, h = 4;
 //        double D = Math.sqrt(dx * dx + dy * dy);
 //        double xm = D - d, xn = xm, ym = h, yn = -h, x;
@@ -61,20 +57,15 @@ public class Panel extends JPanel{
 //       yn = xn * sin + yn * cos + y1;
 //       xn = x;
     	
-        //TODO maybe some pattern here(state for 2nd arrows)
-        int[] xPoints = {x2, x2 + 4, x2 - 4};   //(int) xm, (int) xn};
-        int[] yPoints = {y2, y2 - 20, y2 - 20}; //(int) ym, (int) yn};
-        
-        if (x1 == x2) {
-        	g.drawLine(x1, y1, x2, y2);
-        }
-        else {
-        	g.drawLine(x1, y1, x1, y1 - (y1 - y2)/2);
-        	g.drawLine(x1, y1 - (y1 - y2)/2, x2, y1 - (y1 - y2)/2);
-        	g.drawLine( x2, y1 - (y1 - y2)/2, x2, y2);
-        }
-        //draw polygon
-        g.fillPolygon(xPoints, yPoints, 3);
+    		ArrowContext context = new ArrowContext();
+    		if (arrow.getStart().getIcon().getY() < arrow.getEnd().getIcon().getY()) {
+    			context.setStrategy(new DrawDown());
+    			context.drawNiceArrow(g, arrow);
+    		}
+    		else {
+    			context.setStrategy(new DrawUp());
+    			context.drawNiceArrow(g, arrow);
+    		}
     }
 
 }

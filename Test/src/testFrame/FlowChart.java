@@ -34,6 +34,7 @@ public class FlowChart extends JFrame{
 	  private int currentState = -1;
 	  private Arrow arrow;
 	  private boolean hasStart = false;
+	  private boolean isEdited = false;
 	  private String selected = "";
 	  
 	  private JButton newDiagram = new JButton("New diagram");
@@ -49,8 +50,6 @@ public class FlowChart extends JFrame{
 	  //mediator for selected to delete
 	  private JButton delete = new JButton("Delete");
 	  private JButton text = new JButton("Text");
-	  
-	  private JLabel component = new JLabel();
 	  
 	  //facade or strategy for mouseclick-selected
 	  //factory method(PROTOTYPE!!) ? for creating Element
@@ -163,7 +162,7 @@ public class FlowChart extends JFrame{
 		  clearAll();
 		  
 		  Memento s = saving.getState(index);
-		  if (saving == null) {
+		  if (s == null) {
 			  return false;
 		  }
 		  
@@ -193,7 +192,7 @@ public class FlowChart extends JFrame{
 	  }
 	  
 	  private void clearAll() {
-		  selected = null;
+		  selected = "";
 		  hasStart = false;
 		  
 		  locations.clear();
@@ -277,12 +276,15 @@ public class FlowChart extends JFrame{
           } else {
               if (arrow.getStart() == null) {
                   hasStart = false;
+                  selected = "";
                   return;
               }
               for (Element current : elements) {
                   if (current.getCode().compareTo(component.getText()) == 0) {
                       if (component.getX() == arrow.getStart().getLocation().getX() 
                       		&& component.getY() == arrow.getStart().getLocation().getY()) {
+                    	  hasStart = false;
+                    	  selected = "";
                           return;
                       }
                       arrow.setEnd(current);
@@ -302,14 +304,15 @@ public class FlowChart extends JFrame{
 	  }
 	  
 	  public void editText() {
-
-		  if (selected != null) {
+		  
+		  if (selected != "") {
 			  input.setVisible(true);
 			  input.setText(selected);
 
 			  for(Element current : elements) {
 				  if (current.getCode() == selected) {
-					  input.setBounds(current.getIcon().getX() +120, current.getIcon().getY() + 20, 100, 20);
+					  input.setBounds(current.getIcon().getX() +120, current.getIcon().getY()
+							  + (current.getIcon().getHeight() - 20)/2, 100, 20);
 					 
 				  }
 			  }
@@ -326,7 +329,7 @@ public class FlowChart extends JFrame{
 	  public void setText() {
 		  
 		  for (Element current : elements) {
-			  current.resetIcon();
+			  //current.resetIcon();
 			  if (current.getCode() == selected) {
 				 current.relocateText(input.getText());
 			  }
@@ -334,9 +337,8 @@ public class FlowChart extends JFrame{
 
 		  panel.remove(input);
 		  input.setVisible(false);
-
 		  selected = "";
-
+		
 		  panel.validate();
           refresh();
 //          panel.repaint(); makes no difference
@@ -479,13 +481,12 @@ public class FlowChart extends JFrame{
 	  
 	  public class ClickElement extends MouseInputAdapter {
 		  public void mouseClicked(MouseEvent e) {
-			  
 			  JLabel clicked = (JLabel) e.getComponent();
-			  component = (JLabel) e.getComponent();
+			  
 			  for (Element current : elements) {
 				  current.resetIcon();
 			  }
-			    
+			  
 			  drawArrow(clicked);
 			  setFocus();
 		  } 
