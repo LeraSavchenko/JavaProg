@@ -11,7 +11,7 @@ import ArrowStrategy.DrawUp;
 
 public class Panel extends JPanel{
 
-    private ArrayList<Arrow> arrows = new ArrayList<>();
+	private ArrayList<Arrow> arrows = new ArrayList<>();
 
     public void addArrow(Arrow arrow) {
         for (Arrow current : arrows) {
@@ -36,8 +36,10 @@ public class Panel extends JPanel{
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        
         Graphics2D graphics2D = (Graphics2D) g;
-        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
+        		RenderingHints.VALUE_ANTIALIAS_ON);
         for (Arrow arrow : arrows) {
         	if (arrow.getStart() != null && arrow.getEnd() != null) {
 	            drawArrowLine(g, arrow);
@@ -56,8 +58,8 @@ public class Panel extends JPanel{
 //        x = xn * cos - yn * sin + x1;
 //       yn = xn * sin + yn * cos + y1;
 //       xn = x;
-    	
     		ArrowContext context = new ArrowContext();
+    		
     		if (arrow.getStart().getIcon().getY() < arrow.getEnd().getIcon().getY()) {
     			context.setStrategy(new DrawDown());
     			context.drawNiceArrow(g, arrow);

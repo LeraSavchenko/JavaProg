@@ -10,9 +10,14 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -44,16 +49,10 @@ public class FlowChart extends JFrame{
 
 	  private JTextField input = new JTextField();
 	  
-	  //TODO PATTERNS
-	  //mediator for selected to delete
 	  private JButton delete = new JButton("Delete");
 	  private JButton text = new JButton("Text");
+	  private JButton save = new JButton("Save Image");
 	  
-	  //facade or strategy for mouseclick-selected
-	  //composite for multiple selected
-	  //template method for Element classes
-	  //decorator for arrow(don't fill the "no" arrow)
-	  //some pattern for condition arrows
 	  public FlowChart() throws HeadlessException {
 		  super("Paint Test");
 		  pack();
@@ -81,6 +80,7 @@ public class FlowChart extends JFrame{
 		  data.addActionListener(new AddData());
 		  condition.addActionListener(new AddCondition());
 		  
+		  save.addActionListener(new SaveImage());
 		  delete.addActionListener(new DeleteElement()); 
 		  text.addActionListener(new EditText());
 		  newDiagram.addActionListener(new ActionListener() {
@@ -101,6 +101,7 @@ public class FlowChart extends JFrame{
 		  condition.setSize(120, 20);
 		  delete.setSize(120, 20);
 		  text.setSize(120, 20);
+		  save.setSize(120, 20);
 		  
 		  panel.setLocation(160, 20);
 	      newDiagram.setLocation(20, 20);
@@ -111,8 +112,8 @@ public class FlowChart extends JFrame{
 		  condition.setLocation(20, 220);
 		  text.setLocation(20, 260);
 		  delete.setLocation(20, 300);
-
-		  
+		  save.setLocation(20, 340);
+  
 	      add(panel);
 	      add(newDiagram);
 	      add(terminator);
@@ -122,6 +123,7 @@ public class FlowChart extends JFrame{
 	      add(condition);
 	      add(delete);
 	      add(text);
+	      add(save);
 	  }
 	  
 	  void setFocus() {
@@ -432,6 +434,35 @@ public class FlowChart extends JFrame{
 			  editText();
 			  setFocus();
 		  }
+	  }
+	  
+	  public class SaveImage implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			BufferedImage paintImage = new BufferedImage(panel.getWidth(), 
+					panel.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+			panel.paint(paintImage.getGraphics());
+			
+			JFileChooser fileChoose = new JFileChooser();
+			int option = fileChoose.showSaveDialog(FlowChart.this);
+			if (option != JFileChooser.APPROVE_OPTION) {
+				return;
+			}
+			String pictureName = fileChoose.getSelectedFile().getAbsolutePath();
+			if (pictureName==null) {
+				return;
+			}
+			pictureName += ".png";
+			File outputfile = new File(pictureName);
+			try {
+				ImageIO.write(paintImage, "png", outputfile);
+			} 
+			catch (IOException e1) {
+				e1.printStackTrace();
+			} 
+		}
+		  
 	  }
 	  
 	  public class DragListener extends MouseInputAdapter {

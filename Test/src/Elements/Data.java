@@ -1,12 +1,8 @@
 package Elements;
 
-import java.awt.Point;
-
 import javax.swing.ImageIcon;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 
 public class Data extends Element {
 
